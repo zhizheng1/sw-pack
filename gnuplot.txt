@@ -1,0 +1,48 @@
+[gnuplot]
+http://www.gnuplot.info
+
+cd ~/Desktop; mkdir include lib
+l=(gd lua cairo pango readline libcerf pkg-config); while [ ! ${#l} = ${#l0} ]; do l0=($l); for a in $l; do curl -L "https://formulae.brew.sh/api/formula/$a.json"|sed -e 's|variations.*||g' -e 's|.*"dependencies":\[||g' -e 's|].*||g' -e 's|"||g' -e 's|,|\n|g'|while read i; do l+=($i); done; done; l=(${(u)l}); done
+for a in $l; do curl -L "https://formulae.brew.sh/api/formula/$a.json"|sed -e 's|"ventura":{"cellar":"[^"]*","url":"|\n|g'|sed -e 's|","sha25.*|\n|g'|grep ^htt|while read i; do curl -H 'Authorization: Bearer QQ==' -L "$i" >a; tar zxvf a; done; done
+mv */*/include/* include; mv */*/include/X11/* include/X11; mv */*/include/X11/extensions/* include/X11/extensions; for a in cairo pango-1.0 glib-2.0 lua harfbuzz; do mv include/$a/* include; done; mv glib/*/lib/*/include/* include; mv */*/lib/*.dylib lib
+export PATH=~/Library/Developer/CommandLineTools/usr/bin:$PATH
+export CFLAGS="-isysroot $HOME/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I$HOME/Desktop/include"
+export CXXFLAGS=$CFLAGS
+export CPPFLAGS=$CFLAGS
+export LDFLAGS="-isysroot $HOME/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -L$HOME/Desktop/lib"
+export CAIROPANGO_CFLAGS=$CFLAGS
+export CAIROPANGO_LIBS="-lpango-1.0 -lcairo -lpangocairo-1.0 -lglib-2.0 -lgobject-2.0"
+export CAIROPDF_CFLAGS=$CFLAGS
+export CAIROPDF_LIBS=$CAIROPANGO_LIBS
+export CAIROEPS_CFLAGS=$CFLAGS
+export CAIROEPS_LIBS=$CAIROPANGO_LIBS
+export libgd_CFLAGS=$CFLAGS
+export libgd_LIBS=-lgd
+export LIBCERF_CFLAGS=$CFLAGS
+export LIBCERF_LIBS=-lcerf
+export PKG_CONFIG=`echo ~/Desktop/pkg-config/*/bin/pkg-config`
+export PATH=$PATH:`echo ~/Desktop/lua/*/bin`
+p(){ l=(); for f in $~1; do [ ! -L $f ] && otool -L $f|sed 1,`otool -D $f|awk 'END{print NR}'`d|grep "$2"|awk '{print $1}'|while read i;do j=$3/${i##*/}; echo $f $i $j; install_name_tool -change $i $j $f; l+=($f); done; done; codesign -f -s - ${(u)l} }
+p "~/Desktop/lua/*/bin/lua" @@ ~/Desktop/lib
+p "~/Desktop/lib/*" @@ @loader_path
+./configure --without-x
+[sed -i.0 -e '272s|.*|putenv("PANGOCAIRO_BACKEND=fc");|' src/plot.c]
+make
+p docs/doc2gih @@ ~/Desktop/lib
+p src/bf_test @@ ~/Desktop/lib
+make
+sudo make install
+cp -R /usr/local .; sudo rm -rf /usr/local/*
+cd local; mkdir lib
+for f in `otool -L bin/*|grep @@|awk '{print $1}'|sort -u`; do cp -n ~/Desktop/lib/${f##*/} lib; done
+for f in `otool -L lib/*|grep @|awk '{print $1}'|sort -u`; do cp -n ~/Desktop/lib/${f##*/} lib; done; ls -l lib|wc -l
+p "bin/*" @@ @executable_path/../lib
+
+sudo apt install libgd-dev liblua5.4-dev libcerf-dev
+./configure --without-x LDFLAGS='-Wl,-rpath=\$$ORIGIN/../lib,--disable-new-dtags'
+make
+sudo make install
+cp -R /usr/local .; sudo rm -rf /usr/local/*
+cd local; mkdir lib
+b=(`cat ~/Library/Logs/base.txt`)
+for a in `ldd bin/gnuplot|grep "/lib/"|awk '{print $1}'|sort|uniq`;do [ ${b[(ie)$a]} -gt ${#b} ] && cp /lib/*/$a lib;done

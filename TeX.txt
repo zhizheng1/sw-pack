@@ -1,0 +1,8 @@
+https://tug.org/texlive/acquire-netinstall.html
+./install-tl -no-gui -portable -scheme small
+    D 1 <dir>
+    O D S
+
+[ghostscript]
+https://ghostscript.com/releases/gsdnld.html
+jpeg; unx: libcups2-dev, --without-x --disable-fontconfig
