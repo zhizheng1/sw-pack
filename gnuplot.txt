@@ -1,7 +1,7 @@
 [gnuplot]
 http://www.gnuplot.info
 
-brew install gd lua cairo pango readline libcerf pkg-config
+brew install gd lua cairo pango readline libcerf pkg-config gnu-sed
 export CAIROPANGO_LIBS="-lpango-1.0 -lcairo -lpangocairo-1.0 -lglib-2.0 -lgobject-2.0"
 export CAIROPDF_LIBS=$CAIROPANGO_LIBS
 export CAIROEPS_LIBS=$CAIROPANGO_LIBS
@@ -18,7 +18,7 @@ p "bin/*" /usr/local @executable_path/../lib
 p "lib/*" /usr/local @loader_path
 p "lib/*" @ @loader_path
 
-sudo apt install libgd-dev liblua5.4-dev libcerf-dev
+sudo apt install libgd-dev liblua5.4-dev libcerf-dev libwebp-dev
 ./configure --without-x --without-qt LDFLAGS='-Wl,-rpath=\$$ORIGIN/../lib,--disable-new-dtags'
 make; sudo make install
 cp -R /usr/local .; sudo rm -rf /usr/local/*
