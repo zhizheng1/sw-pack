@@ -1,0 +1,3 @@
+[code]
+https://code.visualstudio.com/#alt-downloads
+CLI
