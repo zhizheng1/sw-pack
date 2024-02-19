@@ -1,0 +1,3 @@
+[dtach]
+https://formulae.brew.sh/api/formula/dtach.json
+https://packages.ubuntu.com/jammy/dtach
