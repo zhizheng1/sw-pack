@@ -1,0 +1,12 @@
+o=/Library/Frameworks/R.framework; sed -i '' -e "s|$o/Resources|$PWD|g" bin/R etc/Renviron;sed -i '' -e "s/^LIBR .*/LIBR = -lR/g" etc/Makeconf;rm R Info.plist
+for f in `otool -L lib/*.dylib modules/*.so|grep /opt/X11|awk '{print $1}'|sort -u`; do cp -n ~/Desktop/lib/${f##*/} lib; done
+p(){ l=(); for f in $~1; do [ ! -L $f ] && otool -L $f|sed 1,`otool -D $f|awk 'END{print NR}'`d|grep "$2"|awk '{print $1}'|while read i;do j=$3/${i##*/}; echo $f $i $j; install_name_tool -change $i $j $f; l+=($f); done; done; codesign -f -s - ${(u)l} }
+p bin/exec/R $o @executable_path/../../lib
+p "lib/*.dylib" "$o\|/opt/X11" @loader_path
+p "modules/*.so" "$o\|/opt/X11" @loader_path/../lib
+p "library/*/*/*.so" "$o\|/opt/X11" @executable_path/../../lib
+
+[linux]
+apt install g++ gfortran libreadline-dev zlib1g-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libpng-dev libjpeg-dev libtiff-dev libicu-dev libxt-dev libpcre2-dev libpango1.0-dev
+./configure FC=gfortran --enable-memory-profiling --enable-R-shlib --disable-java
+for a in `ldd lib/* modules/*|grep "/lib/"|awk '{print $1}'|sort|uniq`;do [ ${b[(ie)$a]} -gt ${#b} ] && cp /lib/*/$a lib;done

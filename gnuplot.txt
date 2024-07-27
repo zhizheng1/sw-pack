@@ -1,0 +1,27 @@
+[gnuplot]
+http://www.gnuplot.info
+
+brew install gd lua cairo pango readline libcerf pkg-config gnu-sed
+export CAIROPANGO_LIBS="-lpango-1.0 -lcairo -lpangocairo-1.0 -lglib-2.0 -lgobject-2.0"
+export CAIROPDF_LIBS=$CAIROPANGO_LIBS
+export CAIROEPS_LIBS=$CAIROPANGO_LIBS
+export libgd_LIBS=-lgd
+export LIBCERF_LIBS=-lcerf
+./configure --without-x --without-qt
+[sed -i.0 -e '273s|.*|putenv("PANGOCAIRO_BACKEND=fc");|' src/plot.c]
+make; sudo make install
+mkdir -p local/bin; cd local; cp /usr/local/bin/gnuplot bin; mkdir -p share/man/man1; cp -R /usr/local/share/gnuplot share; cp /usr/local/share/man/man1/gnuplot.1 share/man/man1; mkdir lib
+for f in `otool -L bin/*|grep /usr/local|awk '{print $1}'|sort -u`; do cp -n /usr/local/**/${f##*/} lib; done
+for f in `otool -L lib/*|grep "/usr/local\|@"|awk '{print $1}'|sort -u`; do cp -n /usr/local/**/${f##*/} lib; done; ls -l lib|wc -l
+p(){ l=(); for f in $~1; do [ ! -L $f ] && otool -L $f|sed 1,`otool -D $f|awk 'END{print NR}'`d|grep "$2"|awk '{print $1}'|while read i;do j=$3/${i##*/}; echo $f $i $j; install_name_tool -change $i $j $f; l+=($f); done; done; codesign -f -s - ${(u)l} }
+p "bin/*" /usr/local @executable_path/../lib
+p "lib/*" /usr/local @loader_path
+p "lib/*" @ @loader_path
+
+sudo apt install libgd-dev liblua5.4-dev libcerf-dev libwebp-dev
+./configure --without-x --without-qt LDFLAGS='-Wl,-rpath=\$$ORIGIN/../lib,--disable-new-dtags'
+make; sudo make install
+cp -R /usr/local .; sudo rm -rf /usr/local/*
+cd local; mkdir lib
+b=(`cat ~/.cache/logs/base.txt`)
+for a in `ldd bin/gnuplot|grep "/lib/"|awk '{print $1}'|sort|uniq`;do [ ${b[(ie)$a]} -gt ${#b} ] && cp /lib/*/$a lib;done

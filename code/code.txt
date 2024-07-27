@@ -1,0 +1,12 @@
+[code]
+https://code.visualstudio.com/Download
+CLI
+
+[vscode.dev]
+cd ~/.vscode/cli/serve-web/*/extensions; mv ~/.vscode-server/extensions/ms-vscode.anycode-* .
+
+[xterm]
+// code: Generate Color Theme From Current Settings
+// code: Open User Settings (JSON)
+theme:{foreground:'#3B3B3B',background:'#FFFFFF',cursor:'#005fb8',cursorAccent:'#FFFFFF',selectionBackground:'#ADD6FF',selectionInactiveBackground:'#E5EBF1',black:'#000000',red:'#cd3131',green:'#107C10',yellow:'#949800',blue:'#0451a5',magenta:'#bc05bc',cyan:'#0598bc',white:'#555555',brightBlack:'#666666',brightRed:'#cd3131',brightGreen:'#14CE14',brightYellow:'#b5ba00',brightBlue:'#0451a5',brightMagenta:'#bc05bc',brightCyan:'#0598bc',brightWhite:'#a5a5a5'},minimumContrastRatio:4.5
+theme:{foreground:'#CCCCCC',background:"#1f1f1f",cursor:'#CCCCCC',cursorAccent:'#1f1f1f',selectionBackground:'#264F78',selectionInactiveBackground:'#3A3D41',black:'#000000',red:'#cd3131',green:'#0DBC79',yellow:'#e5e510',blue:'#2472c8',magenta:'#bc3fbc',cyan:'#11a8cd',white:'#e5e5e5',brightBlack:'#666666',brightRed:'#f14c4c',brightGreen:'#23d18b',brightYellow:'#f5f543',brightBlue:'#3b8eea',brightMagenta:'#d670d6',brightCyan:'#29b8db',brightWhite:'#e5e5e5'},minimumContrastRatio:4.5

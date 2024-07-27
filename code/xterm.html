@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"><meta charset="UTF-8">
+		<link rel="stylesheet" href="xterm.css" />
+		<script src="xterm.js"></script>
+		<script src="xterm-addon-webgl.js"></script>
+		<style>.terminal{padding:2px} .xterm-viewport{background-color:#FFFFFF !important}</style>
+		<script>
+			window.onload = () => {
+				const url_params = new URLSearchParams(window.location.search);
+				const url = url_params.has('i')?url_params.get('i'):'localhost:7681';
+				const token = url_params.has('c')?btoa(url_params.get('c')):"";
+				const term = new Terminal({fontFamily:"Menlo,monospace",fontSize:12,theme:{foreground:'#3B3B3B',background:'#FFFFFF',cursor:'#005fb8',cursorAccent:'#FFFFFF',selectionBackground:'#ADD6FF',selectionInactiveBackground:'#E5EBF1',black:'#000000',red:'#cd3131',green:'#107C10',yellow:'#949800',blue:'#0451a5',magenta:'#bc05bc',cyan:'#0598bc',white:'#555555',brightBlack:'#666666',brightRed:'#cd3131',brightGreen:'#14CE14',brightYellow:'#b5ba00',brightBlue:'#0451a5',brightMagenta:'#bc05bc',brightCyan:'#0598bc',brightWhite:'#a5a5a5'},minimumContrastRatio:4.5});
+				term.open(document.getElementById('terminal'));
+				term.loadAddon(new WebglAddon.WebglAddon());
+				window.visualViewport.onresize=()=>{const c=Math.floor((window.visualViewport.width-4)/7),r=Math.floor((window.visualViewport.height-4)/14);if(c!==term.cols||r!==term.rows)term.resize(c,r)};
+				window.visualViewport.onresize();
+				const socket = new WebSocket("ws://"+url, ['tty']);
+				socket.onopen = () => {
+					socket.binaryType = 'arraybuffer';
+					term.onData(data => socket.send('\x00'+data));
+					term.onBinary(data => socket.send(Uint8Array.from('\x00'+data, r=>r.charCodeAt(0))));
+					socket.onmessage = (e) => term.write(new Uint8Array(e.data));
+					const send_size = (t,r,c) => {
+						const arr = new Uint8Array(6 + t.length);
+						arr.set([1, r&0xFF, (r&0xFF00)>>8, c&0xFF, (c&0xFF00)>>8], 0);
+						arr.set(Uint8Array.from(t, r=>r.charCodeAt(0)), 5);
+						socket.send(arr);
+					};
+					send_size(token,term.rows,term.cols);
+					term.onTitleChange(data => {document.title = data;});
+					term.onResize(({cols,rows}) => {send_size('',rows,cols);});
+					term.parser.registerOscHandler(1337, (data) => {if(data.startsWith('javascript:'))try{Function(data)()}catch(e){window.alert(e)}});
+					window.onbeforeunload = (e) => {if(socket.readyState === WebSocket.OPEN) e.preventDefault();};
+					term.focus();
+				};
+			};
+		</script>
+	</head>
+	<body style="margin:0"><div id="terminal" style="overflow:hidden"></div></body>
+</html>
+
+<!-- vi: set ts=2 sw=2 fdm=indent: -->
