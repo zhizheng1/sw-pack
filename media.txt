@@ -1,0 +1,23 @@
+[pandoc]
+https://pandoc.org/installing.html
+https://github.com/jgm/pandoc
+
+[threejs]
+https://threejs.org
+https://github.com/mrdoob/three.js/
+
+[ffmpeg]
+https://www.ffmpeg.org
+http://www.osxexperts.net
+
+[imagemagick]
+https://imagemagick.org/index.php
+
+for f in `otool -L bin/* lib/*.dylib|grep /opt/X11|awk '{print $1}'|sort -u`; do cp -n ~/Desktop/lib/${f##*/} lib; done
+p(){ l=(); for f in $~1; do [ ! -L $f ] && otool -L $f|sed 1,`otool -D $f|awk 'END{print NR}'`d|grep "$2"|awk '{print $1}'|while read i;do j=$3/${i##*/}; echo $f $i $j; install_name_tool -change $i $j $f; l+=($f); done; done; codesign -f -s - ${(u)l} }
+p "bin/*" "/ImageMagick-\|/opt/X11" @executable_path/../lib
+p "lib/*.dylib" "/ImageMagick-\|/opt/X11" @loader_path
+
+[fsnotifier]
+https://github.com/JetBrains/intellij-community/tree/master/native/fsNotifier
+https://github.com/JetBrains/intellij-community/tree/master/bin

@@ -1,0 +1,8 @@
+[xterm.html]
+fontSize:11,lineHeight:1.1,theme.foreground:'#000000'
+onresize: 7 -> 6.5 for width calc
+
+[ttyd]
+Remove EV
+// cmake . -DLWS_WITH_SSL=NO -DLWS_WITH_LIBUV=YES -DLWS_WITH_EVLIB_PLUGINS=OFF [-DLIBUV_INCLUDE_DIRS=libuv/include -DLIBUV_LIBRARIES=libuv/lib/libuv.*]
+// cc -Ilibwebsockets/include [-Ilibuv/include] ttyd.c libwebsockets.a libuv.a -o ttyd

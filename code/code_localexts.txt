@@ -1,0 +1,6 @@
+[code]
+* repo for local workspace exts
+mkdir ~/.vscode-server/extensions_repo; cd ~/.vscode-server/extensions_repo
+mv ../extensions/ext-<ver> ./ext
+cd <workspace>/.vscode/extensions
+ln -sf ~/.vscode-server/extensions_repo/ext .

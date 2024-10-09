@@ -1,0 +1,24 @@
+sudo apt install libopenblas-base
+cd /lib/x86_64-linux-gnu
+sudo ln -sf libblas.so.3 libblas.so
+
+python3 -m venv venv
+./venv/bin/pip install -U pip setuptools wheel
+
+#https://github.com/numpy/numpy/issues/26191
+#https://projects.scipy.org
+./SciPy/bin/pip install -U numpy scipy matplotlib pandas pyarrow jupyter-console sympy scikit-learn scikit-image statsmodels --only-binary=:all:
+printf 'backend: webagg\nfigure.dpi: 72\n' >`./SciPy/bin/python -c "import matplotlib; print(matplotlib.get_configdir())"`/matplotlibrc
+
+./Jupyter/bin/pip install jupyter jupyterlab
+echo $PWD/SciPy/lib/*/site-packages >`echo Jupyter/lib/*/site-packages`/SciPy.pth
+ln -sf $PWD/Jupyter/lib/*/site-packages/ipywidgets `echo SciPy/lib/*/site-packages`/
+
+echo 'set terminal pngcairo  transparent enhanced font "arial,10" fontscale 1.0 size 600, 400' >~/.gnuplot
+
+# mirror(s)
+PIP_INDEX_URL=https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+
+[Others]
+pip install pymc
+echo 'export PYTENSOR_FLAGS="gcc__cxxflags=-isysroot $HOME/.local/opt/CLT/SDKs/MacOSX.sdk"' >>bin/activate
